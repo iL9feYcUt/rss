@@ -2,6 +2,7 @@
   "name": "rss-pwa",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,7 +10,6 @@
     "scrape": "node scripts/scrape_and_upsert.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "node-fetch": "^3.4.0"
+    "cheerio": "^1.0.0-rc.12"
   }
 }
