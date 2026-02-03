@@ -51,4 +51,3 @@ jobs:
         run: |
           npx supabase functions deploy fetch_and_parse --project-ref "$SUPABASE_PROJECT_REF"
           npx supabase functions deploy send_push --project-ref "$SUPABASE_PROJECT_REF"
-          npx supabase functions deploy ping --project-ref "$SUPABASE_PROJECT_REF"
