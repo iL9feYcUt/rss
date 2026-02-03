@@ -8,32 +8,20 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Call Supabase Edge Function to fetch and post results to Supabase
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Scrape and upsert articles to Supabase
         env:
-          SUPABASE_FUNCTION_URL: ${{ secrets.SUPABASE_FUNCTION_URL }}
-          SUPABASE_FUNCTION_KEY: ${{ secrets.SUPABASE_FUNCTION_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          set -e
-          echo 'Calling Edge Function...'
-          curl -sS -X POST "$SUPABASE_FUNCTION_URL/fetch_and_parse" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $SUPABASE_FUNCTION_KEY" \
-            -d '{"url":"https://iphone-mania.jp/","listSelector":"article","mapping":{"title":"h2, .entry-title","link":"a","date":"time, .entry-date"}}' -o response.json
-
-          echo 'Extracting items and posting to Supabase...'
-          jq -c '.items' response.json > items.json
-          # items.json is an array; POST to Supabase REST for bulk insert/upsert
-          curl -sS -X POST "$SUPABASE_URL/rest/v1/articles" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/json" \
-            -H "Prefer: resolution=merge-duplicates" \
-            --data-binary @items.json
+        run: npm run scrape
 
