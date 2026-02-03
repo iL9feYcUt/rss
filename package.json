@@ -10,6 +10,13 @@
     "scrape": "node scripts/scrape_and_upsert.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "@supabase/supabase-js": "^2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.0"
   }
 }
