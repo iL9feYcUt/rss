@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import { supabase } from './supabaseClient'
 
-const DEFAULT_FUNCTION_URL = (import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://<YOUR_SUPABASE>.functions.supabase.co') + '/fetch_and_parse'
-const FUNCTIONS_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://<YOUR_SUPABASE>.functions.supabase.co'
+const DEFAULT_FUNCTION_URL = (import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://umflrvoyqlsgqyorbafo.functions.supabase.co') + '/fetch_and_parse'
+const FUNCTIONS_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://umflrvoyqlsgqyorbafo.functions.supabase.co'
 
 export default function App(){
   const [url,setUrl] = useState('https://iphone-mania.jp/')
