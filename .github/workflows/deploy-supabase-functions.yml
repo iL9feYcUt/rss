@@ -33,13 +33,17 @@ jobs:
           npx supabase link --project-ref "$SUPABASE_PROJECT_REF"
 
       - name: (Optional) set VAPID secrets
-        if: ${{ secrets.VAPID_PUBLIC_KEY && secrets.VAPID_PRIVATE_KEY }}
         env:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
         run: |
-          npx supabase secrets set VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY" VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY" --project-ref "$SUPABASE_PROJECT_REF"
+          if [ -n "$VAPID_PUBLIC_KEY" ] && [ -n "$VAPID_PRIVATE_KEY" ]; then
+            echo "Setting VAPID secrets"
+            npx supabase secrets set VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY" VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY" --project-ref "$SUPABASE_PROJECT_REF"
+          else
+            echo "VAPID keys not provided — skipping secrets set"
+          fi
 
       - name: Deploy functions
         env:
