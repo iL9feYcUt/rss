@@ -1,7 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import { supabase } from './supabaseClient'
 
-const DEFAULT_FUNCTION_URL = 'https://<YOUR_SUPABASE>.functions.supabase.co/fetch_and_parse'
+const DEFAULT_FUNCTION_URL = (import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://<YOUR_SUPABASE>.functions.supabase.co') + '/fetch_and_parse'
+const FUNCTIONS_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://<YOUR_SUPABASE>.functions.supabase.co'
 
 export default function App(){
   const [url,setUrl] = useState('https://iphone-mania.jp/')
@@ -63,7 +64,7 @@ export default function App(){
       const reg = await navigator.serviceWorker.ready
       const sub = await reg.pushManager.getSubscription()
       if (!sub) return alert('購読されていません')
-      const fnBase = 'https://<YOUR_SUPABASE>.functions.supabase.co'
+      const fnBase = FUNCTIONS_BASE
       const res = await fetch(fnBase + '/send_push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subscription: sub.toJSON(), payload: { title: 'テスト通知', body: 'フロントエンドからのテスト通知', url: window.location.href } }) })
       if (!res.ok) throw new Error('送信失敗')
       alert('テスト通知を送信しました')
