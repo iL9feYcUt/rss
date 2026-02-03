@@ -1,10 +1,12 @@
 import { load } from 'cheerio'
 
+const DEBUG = process.env.SCRAPE_DEBUG === '1' || process.env.SCRAPE_DEBUG === 'true'
 async function scrapeIphoneMania(){
   const url = 'https://iphone-mania.jp/'
   const res = await fetch(url, { headers: { 'User-Agent': 'rss-pwa-bot/1.0' } })
   if (!res.ok) throw new Error('Fetch failed: ' + res.status)
   const html = await res.text()
+  if (DEBUG) console.log('--- HTML snippet (first 2000 chars) ---\n' + html.slice(0, 2000))
   const $ = load(html)
   const items = []
   $('article').each((i, el) => {
@@ -14,6 +16,7 @@ async function scrapeIphoneMania(){
     const date = $(el).find('time, .entry-date').first().text().trim()
     if (title || link) items.push({ title, link, date })
   })
+  if (DEBUG) console.log(`Found ${items.length} items (returning)`)
   return items
 }
 
@@ -35,6 +38,7 @@ async function upsertArticles(items){
   })
   const text = await res.text()
   if (!res.ok) throw new Error('Supabase upsert failed: ' + res.status + ' ' + text)
+  if (DEBUG) console.log('Upsert response:', text)
   return text
 }
 
@@ -43,6 +47,7 @@ async function main(){
     console.log('Scraping...')
     const items = await scrapeIphoneMania()
     console.log('Found', items.length, 'items')
+    if (DEBUG && items.length > 0) console.log('Items preview:', JSON.stringify(items.slice(0, 10), null, 2))
     if (items.length === 0) return console.log('No items to upsert')
     console.log('Upserting to Supabase...')
     const r = await upsertArticles(items)
