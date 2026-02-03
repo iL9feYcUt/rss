@@ -1,11 +1,11 @@
-import cheerio from 'cheerio'
+import { load } from 'cheerio'
 
 async function scrapeIphoneMania(){
   const url = 'https://iphone-mania.jp/'
   const res = await fetch(url, { headers: { 'User-Agent': 'rss-pwa-bot/1.0' } })
   if (!res.ok) throw new Error('Fetch failed: ' + res.status)
   const html = await res.text()
-  const $ = cheerio.load(html)
+  const $ = load(html)
   const items = []
   $('article').each((i, el) => {
     const title = $(el).find('h2, .entry-title').first().text().trim()
