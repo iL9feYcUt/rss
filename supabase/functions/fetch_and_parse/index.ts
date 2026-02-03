@@ -12,6 +12,10 @@ export default async function handler(req: Request) {
   try {
     const body = await req.json()
     const { url, listSelector, mapping } = body
+    // debug フラグが送られたら重い処理をスキップして簡易レスポンスを返す
+    if (body.debug) {
+      return new Response(JSON.stringify({ ok: true, debug: true, url, listSelector, mapping }), { headers: corsHeaders })
+    }
     if (!url || !listSelector) return new Response(JSON.stringify({ error: 'missing parameters' }), { status: 400, headers: corsHeaders })
 
     const res = await fetch(url, { headers: { 'User-Agent': 'rss-pwa/1.0' } })
