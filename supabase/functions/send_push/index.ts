@@ -1,11 +1,5 @@
 // Supabase Edge Function (Deno) - send Web Push notifications
-import * as webpush from 'https://esm.sh/web-push@3.5.0'
-
-const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC_KEY') || ''
-const VAPID_PRIVATE = Deno.env.get('VAPID_PRIVATE_KEY') || ''
-if (VAPID_PUBLIC && VAPID_PRIVATE) {
-  try { webpush.setVapidDetails('mailto:admin@example.com', VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { console.warn('vapid set failed', e) }
-}
+// Note: delay-import `web-push` inside the handler to reduce cold-start resource usage.
 
 export default async function handler(req: Request) {
   const corsHeaders = {
@@ -15,6 +9,20 @@ export default async function handler(req: Request) {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
   }
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders })
+
+  // Delay-import web-push to avoid heavy module fetch at module load time.
+  let webpush: any
+  try {
+    webpush = await import('https://esm.sh/web-push@3.5.0')
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'failed to load web-push', detail: String(e) }), { status: 500, headers: corsHeaders })
+  }
+
+  const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC_KEY') || ''
+  const VAPID_PRIVATE = Deno.env.get('VAPID_PRIVATE_KEY') || ''
+  if (VAPID_PUBLIC && VAPID_PRIVATE) {
+    try { webpush.setVapidDetails('mailto:admin@example.com', VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { console.warn('vapid set failed', e) }
+  }
 
   try {
     const body = await req.json()
