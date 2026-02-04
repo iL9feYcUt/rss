@@ -9,9 +9,10 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
 
 export default async function handler(req: Request) {
   const corsHeaders = {
-    'content-type': 'application/json',
-    'access-control-allow-origin': '*',
-    'access-control-allow-headers': 'Content-Type, Authorization'
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
   }
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders })
 
